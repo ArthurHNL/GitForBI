@@ -1,0 +1,66 @@
+{
+  "repoDir": "C:\\Repositories\\Github\\ArthurHNL\\D1-zorgparktuin-es-webapp",
+  "pathToGit": "C:\\Program Files\\Git\\bin\\git.exe",
+  "defaultBranch": "master",
+  "prePullCommands": [
+    {
+      "command": "docker-compose",
+      "args": "down",
+      "description": "Disable application",
+      "parallel": false
+    }
+  ],
+  "postPullCommands": [
+    {
+      "command": "docker-compose",
+      "args": "up -d --build",
+      "description": "Enable application",
+      "executeIn": {
+        "path": "src",
+        "relativeFromRepoDir": true
+      },
+      "parallel": false,
+      "allowFailure": false
+    },
+    {
+      "command": "docker",
+      "args": "run --rm -v \"C:\\Repositories\\Github\\ArthurHNL\\D1-zorgparktuin-es-webapp\\src:/app\" composer:latest install",
+      "description": "Installing dependencies and generating classmaps",
+      "executeIn": {
+        "path": "src",
+        "relativeFromRepoDir": true
+      },
+      "parallel": true
+    },
+    {
+      "command": "docker",
+      "args": "run --rm -v  \"C:\\Repositories\\Github\\ArthurHNL\\D1-zorgparktuin-es-webapp\\src:/work\" -w=\"/work/\" node:latest npm install",
+      "executeIn": {
+        "path": "src",
+        "relativeFromRepoDir": true
+      },
+      "parallel": true
+    },
+    {
+      "command": "docker",
+      "args": "run --rm -v  \"C:\\Repositories\\Github\\ArthurHNL\\D1-zorgparktuin-es-webapp\\src:/work\" -w=\"/work/\" node:latest npm run development",
+      "executeIn": {
+        "path": "src",
+        "relativeFromRepoDir": true
+      },
+      "newBatch": true,
+      "parallel": true
+    },
+    {
+      "command": "docker",
+      "args": "exec -it de-es-phpengine  php -d memory_limit=-1 artisan migrate:fresh --seed",
+      "description": "Migrating and seeding database",
+      "warning": "Executing this tool will reset your database.",
+      "executeIn": {
+        "path": "src",
+        "relativeFromRepoDir": true
+      },
+      "parallel": true
+    }
+  ]
+}
