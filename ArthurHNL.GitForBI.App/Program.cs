@@ -37,6 +37,8 @@ namespace ArthurHNL.GitForBI.App
             } catch (NonZeroExitCodeException ex)
             {
                 Console.Error.WriteLine(ex.Message);
+                Console.WriteLine("Press any key to continue...");
+                Console.ReadLine();
                 Environment.Exit(-1);
             }
 
